@@ -19,6 +19,6 @@ class Identity {
             number.append((char) (random.nextInt('9' - '0') + '0'));
             sum += weight[i] * (number.charAt(i)-'0');
         }
-        return series.toString() + sum%10 + number;
+        return series.toString() + sum % 10 + number;
     }
 }
