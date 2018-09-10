@@ -1,4 +1,4 @@
-/*/import java.util.*;
+import java.util.*;
 
 class Nip{
     Nip(){
@@ -45,4 +45,4 @@ class Nip{
 
         return nipNumber.replaceAll("[^a-zA-Z0-9]","");
     }
-}/*/
+}
