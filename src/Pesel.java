@@ -53,11 +53,9 @@ class Pesel {
 
         if (b == 1) {
             number = "000" + number;
-        }
-        else if (b == 2) {
+        } else if (b == 2) {
             number = "00" + number;
-        }
-        else if (b == 3) {
+        } else if (b == 3) {
             number = "0" + number;
         }
 
