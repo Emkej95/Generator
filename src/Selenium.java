@@ -15,17 +15,17 @@ public class Selenium {
         }
 
         if (number == 1 || userInput.equals("1")) {
+            System.out.println("The number is: 1. Generating Natural Person.");
             Natural natural = new Natural();
             natural.run();
-            System.out.println("The number is: 1. Generating Natural Person.");
         } else if (number == 2 || userInput.equals("2")) {
+            System.out.println("The number is: 2. Generating Sole Proprietorship.");
             Sole sole = new Sole();
             sole.run();
-            System.out.println("The number is: 2. Generating Sole Proprietorship.");
         } else {
+            System.out.println("The number is: 3. Generating Company.");
             Company company = new Company();
             company.run();
-            System.out.println("The number is: 3. Generating Company.");
         }
     }
 }
