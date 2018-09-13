@@ -1,3 +1,5 @@
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 class Data {
@@ -13,7 +15,7 @@ class Data {
     private String[] companyNameFirstArr = {"Mega", "Ultra", "Hiper", "Wypas", "Full", "Super"};
     private String[] companyNameSecondArr = {"Buty", "Auta","Mydła","Powidła", "Alkohole", "Artykuły Spożywcze", "Kurtki", "Patyki", "Opony", "Słodycze", "Artykuły budowlane", "Korki", "Rolnicze", "Koki", "Loki", "Tłoki", "Szafy", "Nogi"};
     private String[] companyTypeArr = {"Sp. z o.o.", "S.A.", ""};
-    private int[] trade = {211,154,141,140,170,155,186,187,142,189,190,191,192,193,188,143,194,210,139,196,185,212,180,197,198,179,175,182,171,144,145,173,177,181,172,156,199,200,157,158,174,201,202,159,146,147,176,160,161,163,162,164,165,203,178,148,166,204,213,167,205,149,150,168,151,206,207,152,169,209,153};
+    private List<String> tradeList = Arrays.asList("211","154","141","140","170","155","186","187","142","189","190","191","192","193","188","143","194","210","139","196","185","212","180","197","198","179","175","182","171","144","145","173","177","181","172","156","199","200","157","158","174","201","202","159","146","147","176","160","161","163","162","164","165","203","178","148","166","204","213","167","205","149","150","168","151","206","207","152","169","209","153");
 
     String getName() {
         int randomNumber = random.nextInt(namesArr.length);
@@ -56,8 +58,21 @@ class Data {
         return companyNameFirstArr[randomFirstName] + " " + companyNameSecondArr[randomSecondName] + " " + companyTypeArr[randomCompanyType];
     }
 
-    int getCompanyTrade() {
-        int select = random.nextInt(trade.length);
-        return (trade[select]);
+    String getCompanyTrade() {
+        int select = random.nextInt(tradeList.size());
+        return (tradeList.get(select));
+    }
+
+    String getCompanyPkd() {
+        return String.valueOf(random.nextInt(654)+1);
+    }
+
+    String getCustomerClass() {
+        int customerClass = 0;
+
+        while (customerClass == 0 || customerClass == 17){
+            customerClass = random.nextInt(22) +1;
+        }
+        return String.valueOf(customerClass);
     }
 }

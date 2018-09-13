@@ -6,10 +6,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.util.Random;
-
 class Company {
-    void run() throws InterruptedException {
+    void run() {
         DesiredCapabilities capabilities = DesiredCapabilities.firefox();
         capabilities.setCapability("marionette", true);
 
@@ -53,13 +51,67 @@ class Company {
         firefox.findElement(By.xpath("//*[@id=\"context-person-surname\"]")).sendKeys(data.getLastName());
         firefox.findElement(By.xpath("//*[@id=\"context-person-reg_pes\"]")).sendKeys(pesel.getPesel());
         firefox.findElement(By.xpath("//*[@id=\"context-person-birth_place\"]")).sendKeys(data.getCityName());
+
+        //Select random trade
+        /*//*/Select trade = new Select(firefox.findElement(By.xpath("//*[@id=\"context-corporation-trade\"]")));
+        /*//*/trade.selectByValue(data.getCompanyTrade());
+        //Selected
+
+        firefox.findElement(By.xpath("//*[@id=\"context-person-identityDocument-number\"]")).sendKeys(identity.generateDO());
+        firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[8]/div/div/form/div/div[1]/fieldset/div[17]/fieldset/div[4]/div[2]/img")).click(); //ID Release date
+        firefox.findElement(By.xpath("/html/body/div[7]/div/div/select[2]")).click();
+        firefox.findElement(By.xpath("/html/body/div[7]/div/div/select[2]/option[100]")).click();
+        firefox.findElement(By.xpath("/html/body/div[7]/table/tbody/tr[2]/td[4]/a")).click();
+
+        //Select customer class
+        /*//*/Select customerClass = new Select(firefox.findElement(By.xpath("//*[@id=\"context-corporation-customer_class\"]")));
+        /*//*/customerClass.selectByValue(data.getCustomerClass());
+        //Selected
+
         firefox.findElement(By.xpath("//*[@id=\"context-person-email\"]")).sendKeys("mkrzyzak3@ideabank.pl");
         firefox.findElement(By.xpath("//*[@id=\"context-person-phone\"]")).sendKeys("515045208");
 
         //Select random PKD
-        Random randPkd = new Random();
-        int pkd1 = randPkd.nextInt(654)+1;
-        Select pkd = new Select(firefox.findElement(By.xpath("//*[@id=\"context-corporation-pkd\"]")));
-        pkd.selectByValue(String.valueOf(pkd1));
+        /*//*/Select pkd = new Select(firefox.findElement(By.xpath("//*[@id=\"context-corporation-pkd\"]")));
+        /*//*/pkd.selectByValue(data.getCompanyPkd());
+        //Selected
+
+        //Select legal status
+        /*//*/Select legalStatus = new Select(firefox.findElement(By.xpath("//*[@id=\"context-corporation-legal_status\"]")));
+        /*//*/legalStatus.selectByValue("1");
+        //Selected
+
+        //Select residence country as Poland
+        /*//*/Select residenceCountry = new Select(firefox.findElement(By.id("context-person-residence-country-residence_country")));
+        /*//*/residenceCountry.selectByValue("161");
+        //Selected
+
+        //Select not PEP
+        /*//*/Select pep = new Select(firefox.findElement(By.xpath("//*[@id=\"context-person-pep-pep\"]")));
+        /*//*/pep.selectByValue("2");
+        /*//*/firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[8]/div/div/form/div/div[1]/fieldset/div[21]/fieldset/div[3]/div[2]/img")).click();
+        /*//*/firefox.findElement(By.xpath("/html/body/div[7]/div/div/select[2]")).click();
+        /*//*/firefox.findElement(By.xpath("/html/body/div[7]/div/div/select[2]/option[100]")).click();
+        /*//*/firefox.findElement(By.xpath("/html/body/div[7]/table/tbody/tr[2]/td[4]/a")).click();
+        //Selected
+
+        //Select company residence country as Poland
+        /*//*/Select residenceCountryCompany = new Select(firefox.findElement(By.xpath("//*[@id=\"context-corporation-residence-country-residence_country\"]")));
+        /*//*/residenceCountryCompany.selectByValue("161");
+        //Selected
+
+        //Select second country residency to none
+        /*//*/Select secondCountryResidency = new Select(firefox.findElement(By.xpath("//*[@id=\"context-corporation-residence-crs-resident_in_second_country\"]")));
+        /*//*/secondCountryResidency.selectByValue("2");
+        //Selected
+
+        firefox.findElement(By.xpath("//*[@id=\"context-person-address-street\"]")).sendKeys(data.getStreetName());
+        firefox.findElement(By.xpath("//*[@id=\"context-person-address-house_number\"]")).sendKeys(data.getRandomNumber());
+        firefox.findElement(By.xpath("//*[@id=\"context-person-address-town\"]")).sendKeys("Warszawa");
+        firefox.findElement(By.xpath("//*[@id=\"context-person-address-postal_code\"]")).sendKeys("01-234");
+        firefox.findElement(By.xpath("//*[@id=\"context-person-address-post\"]")).sendKeys("Warszawa");
+        firefox.findElement(By.xpath("//*[@id=\"addressCopyToCorrespondence\"]")).click();
+        firefox.findElement(By.xpath("//*[@id=\"addressCopyToFirm\"]")).click();
+        firefox.findElement(By.xpath("//*[@id=\"addressCopyToCompanyCorrespondence\"]")).click();
     }
 }
