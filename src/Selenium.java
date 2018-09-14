@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 public class Selenium {
     public static void main(String[] args) throws InterruptedException {
-        System.out.println("Input number between 1-3:" + "\n" + "Number 1 - create natural person," + "\n" + "Number 2 - create sole proprietorship," + "\n" + "Number 3 - create company." + "\n" + "Type 'r' for random");
+        System.out.println("Input number between 1-3:" + "\n" + "Number 1 - create natural person," + "\n" + "Number 2 - create sole proprietorship," + "\n" + "Number 3 - create company." + "\n" + "Type 'r' for random.");
 
         Random r = new Random();
         int number = 0;
@@ -22,10 +22,13 @@ public class Selenium {
             System.out.println("The number is: 2. Generating Sole Proprietorship.");
             Sole sole = new Sole();
             sole.run();
-        } else {
+        } else if (number == 3 || userInput.equals("3")){
             System.out.println("The number is: 3. Generating Company.");
             Company company = new Company();
             company.run();
+        } else {
+            System.out.println("Wrong number. Terminating...");
+            Thread.currentThread().interrupt();
         }
     }
 }

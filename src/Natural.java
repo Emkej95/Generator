@@ -43,7 +43,7 @@ class Natural {
         firefox.findElement(By.xpath("//*[@id=\"context-person-birth_place\"]")).sendKeys(data.getCityName());
         firefox.findElement(By.xpath("//*[@id=\"context-person-email\"]")).sendKeys("mkrzyzak3@ideabank.pl");
         firefox.findElement(By.xpath("//*[@id=\"context-person-phone\"]")).sendKeys("515045208");
-        firefox.findElement(By.xpath("//*[@id=\"context-person-identityDocument-number\"]")).sendKeys(identity.generateDO());
+        firefox.findElement(By.xpath("//*[@id=\"context-person-identityDocument-number\"]")).sendKeys(identity.getIdentity());
         firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[8]/div/div[3]/form/div[2]/div[1]/fieldset/div[17]/fieldset/div[4]/div[2]/img")).click(); //ID Release date
         firefox.findElement(By.xpath("/html/body/div[7]/div/div/select[2]")).click();
         firefox.findElement(By.xpath("/html/body/div[7]/div/div/select[2]/option[100]")).click();
@@ -63,9 +63,9 @@ class Natural {
         firefox.findElement(By.xpath("//*[@id=\"context-person-address-post\"]")).sendKeys("Warszawa");
         firefox.findElement(By.xpath("//*[@id=\"addressCopyToCorrespondence\"]")).click();
         firefox.findElement(By.xpath("//*[@id=\"context-person-other-account_purpose\"]")).click();
-        firefox.findElement(By.xpath(data.getRandomAccPurpose())).click();
+        firefox.findElement(By.xpath(data.getAccountPurpose())).click();
         firefox.findElement(By.xpath("//*[@id=\"context-person-other-level_deposited_values\"]")).click();
-        firefox.findElement(By.xpath(data.getDeposValue())).click();
+        firefox.findElement(By.xpath(data.getDepositedValues())).click();
         firefox.findElement(By.xpath("//*[@id=\"context-person-personAgreements-agreements_set_all\"]")).click();
         firefox.findElement(By.xpath("//*[@id=\"person-copyDataFromClient\"]")).click();
         firefox.findElement(By.xpath("//*[@id=\"person-copyDataFromClient\"]")).click();

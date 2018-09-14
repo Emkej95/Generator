@@ -2,7 +2,7 @@ import java.util.Random;
 
 class Identity {
 
-    String generateDO(){
+    String getIdentity(){
         Random random = new Random();
         StringBuilder series = new StringBuilder();
         StringBuilder number = new StringBuilder();

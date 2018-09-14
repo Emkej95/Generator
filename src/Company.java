@@ -7,7 +7,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 class Company {
-    void run() {
+    void run() throws InterruptedException {
         DesiredCapabilities capabilities = DesiredCapabilities.firefox();
         capabilities.setCapability("marionette", true);
 
@@ -17,6 +17,7 @@ class Company {
         Identity identity = new Identity();
         Nip nip = new Nip();
         Regon regon = new Regon();
+        String crsStatus = data.getCrsStatus();
 
         /*/~~~~~OPEN WEB BROWSER~~~~~/*/
         FirefoxDriver firefox = new FirefoxDriver();
@@ -57,7 +58,7 @@ class Company {
         /*//*/trade.selectByValue(data.getCompanyTrade());
         //Selected
 
-        firefox.findElement(By.xpath("//*[@id=\"context-person-identityDocument-number\"]")).sendKeys(identity.generateDO());
+        firefox.findElement(By.xpath("//*[@id=\"context-person-identityDocument-number\"]")).sendKeys(identity.getIdentity());
         firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[8]/div/div/form/div/div[1]/fieldset/div[17]/fieldset/div[4]/div[2]/img")).click(); //ID Release date
         firefox.findElement(By.xpath("/html/body/div[7]/div/div/select[2]")).click();
         firefox.findElement(By.xpath("/html/body/div[7]/div/div/select[2]/option[100]")).click();
@@ -113,5 +114,55 @@ class Company {
         firefox.findElement(By.xpath("//*[@id=\"addressCopyToCorrespondence\"]")).click();
         firefox.findElement(By.xpath("//*[@id=\"addressCopyToFirm\"]")).click();
         firefox.findElement(By.xpath("//*[@id=\"addressCopyToCompanyCorrespondence\"]")).click();
+
+        //Select CRS Status
+        /*//*/firefox.findElement(By.xpath("//*[@id=\"context-corporation-residence-crs-status-crs_residence_status\"]")).click();
+        /*//*/Select crsStatusDropdown = new Select(firefox.findElement(By.xpath("//*[@id=\"context-corporation-residence-crs-status-crs_residence_status\"]")));
+        /*//*/crsStatusDropdown.selectByValue(crsStatus);
+        /*//*/if (crsStatus.equals("3")){
+        /*//*/      firefox.findElement(By.xpath("//*[@id=\"context-corporation-residence-crs-status-name_securities_market\"]")).sendKeys("GPW");
+        /*//*/      firefox.findElement(By.xpath("//*[@id=\"context-corporation-residence-crs-status-entity_related\"]")).sendKeys("GPW");
+        /*//*/}
+        //Selected
+
+        //Select FATCA status
+        /*//*/Select fatcaStatus = new Select(firefox.findElement(By.xpath("//*[@id=\"context-corporation-residence-fatca-status-fatca_corpo_status\"]")));
+        /*//*/fatcaStatus.selectByValue("1");
+        /*//*/firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[8]/div/div/form/div/div[2]/fieldset/div[22]/fieldset/fieldset[3]/div[3]/div[2]/img")).click();
+        /*//*/firefox.findElement(By.xpath("/html/body/div[7]/div/div/select[2]")).click();
+        /*//*/firefox.findElement(By.xpath("/html/body/div[7]/div/div/select[2]/option[100]")).click();
+        /*//*/firefox.findElement(By.xpath("/html/body/div[7]/table/tbody/tr[2]/td[4]/a")).click();
+        //Selected
+
+        //Select Account Purpose and Deposited Values
+        /*//*/Select accountPurpose = new Select(firefox.findElement(By.xpath("//*[@id=\"context-person-other-account_purpose\"]")));
+        /*//*/Select depositedValues = new Select(firefox.findElement(By.xpath("//*[@id=\"context-person-other-level_deposited_values\"]")));
+        /*//*/accountPurpose.selectByValue(data.getAccountPurpose());
+        /*//*/depositedValues.selectByValue(data.getDepositedValues());
+        //Selected
+
+        firefox.findElement(By.xpath("//*[@id=\"context-person-personAgreements-agreements_set_all\"]")).click();
+        firefox.findElement(By.xpath("//*[@id=\"context-person-personAgreements-copyAgreementsFromClient\"]")).click();
+
+        for (int i = 0; i<2; i++){
+            firefox.findElement(By.xpath("//*[@id=\"corporation-copyDataFromClient\"]")).click();
+        }
+
+        for (int i = 0; i<2; i++){
+            firefox.findElement(By.xpath("//*[@id=\"person-copyDataFromClient\"]")).click();
+        }
+
+        firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[8]/div/div/form/div/div[3]/input")).click();
+        Thread.sleep(5000);
+        firefox.findElement(By.xpath("//*[@id=\"submit\"]")).click();
+
+        if (firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[2]")).isDisplayed()) {
+            firefox.findElement(By.xpath("//*[@id=\"submit\"]")).click();
+        }
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[3]/div[3]/div[5]/div[1]/div/div/table/tbody/tr/td[12]/a[1]")));
+        firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[5]/div[1]/div/div/table/tbody/tr/td[12]/a[1]")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"crmmenu-createindef\"]")));
+        firefox.findElement(By.xpath("//*[@id=\"crmmenu-createindef\"]")).click();
     }
 }
