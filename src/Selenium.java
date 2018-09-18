@@ -11,6 +11,7 @@ public class Selenium {
         String userInput = scanner.nextLine();
 
         if (userInput.equals("r")) {
+            System.out.println("Generating random client...");
             number = r.nextInt(3) + 1;
         }
 
@@ -22,7 +23,7 @@ public class Selenium {
             System.out.println("The number is: 2. Generating Sole Proprietorship.");
             Sole sole = new Sole();
             sole.run();
-        } else if (number == 3 || userInput.equals("3")){
+        } else if (number == 3 || userInput.equals("3")) {
             System.out.println("The number is: 3. Generating Company.");
             Company company = new Company();
             company.run();

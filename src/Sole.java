@@ -6,19 +6,74 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Random;
 
+import static java.lang.Thread.sleep;
+
 class Sole {
+
+    private Connection getConnection(){
+        Connection connect = null;
+
+        String dbUser = "postgres";
+        String dbUrl = "jdbc:postgresql://localhost:5432/postgres";
+        String dbPassword = "Start1234!";
+
+        try {
+            connect = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return connect;
+    }
+
+    private void insert(String contextid, String idnumber, String clientname, String clientlastname, String clientpesel, String clientregonnumber, String clientnipnumber, String phonepassword){
+        String sql = "INSERT INTO clients (clienttype, contextid, idnumber, clientname, clientlastname, clientpesel, clientregonnumber, clientnipnumber, phonepassword) VALUES(?,?,?,?,?,?,?,?,?)";
+
+        try (Connection connect = this.getConnection();
+             PreparedStatement pstmt = connect.prepareStatement(sql)) {
+            pstmt.setString(1, "Sole");
+            pstmt.setString(2, contextid);
+            pstmt.setString(3, idnumber);
+            pstmt.setString(4, clientname);
+            pstmt.setString(5, clientlastname);
+            pstmt.setString(6, clientpesel);
+            pstmt.setString(7, clientregonnumber);
+            pstmt.setString(8, clientnipnumber);
+            pstmt.setString(9, phonepassword);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     void run() throws InterruptedException {
         DesiredCapabilities capabilities = DesiredCapabilities.firefox();
         capabilities.setCapability("marionette", true);
 
         /*/~~~~CREATE CLASS INSTANCES AND VARIABLES~~~~/*/
+        Sole sole = new Sole();
         Data data = new Data();
         Pesel pesel = new Pesel();
         Identity identity = new Identity();
         Nip nip = new Nip();
         Regon regon = new Regon();
+
+        /*/~~~~~VARIABLES VALUES FROM METHODS~~~~~/*/
+        sole.getConnection();
+        String nipNumber = nip.getNip();
+        String regonNumber = regon.getRegon();
+        String companyName = data.getCompanyName();
+        String personName = data.getName();
+        String personLastName = data.getLastName();
+        String peselNumber = pesel.getPesel();
+        String cityName = data.getCityName();
+        String idNumber = identity.getIdentity();
 
         /*/~~~~~OPEN WEB BROWSER~~~~~/*/
         FirefoxDriver firefox = new FirefoxDriver();
@@ -36,11 +91,14 @@ class Sole {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"context-company-nip\"]")));
 
         /*/~~~~CREATE SOLE PROPRIETORSHIP~~~~/*/
-        firefox.findElement(By.xpath("//*[@id=\"context-company-nip\"]")).sendKeys(nip.getNip());
-        firefox.findElement(By.xpath("//*[@id=\"context-company-reg_pes\"]")).sendKeys(regon.getRegon());
+        firefox.findElement(By.xpath("//*[@id=\"context-company-nip\"]")).sendKeys(nipNumber);
+        System.out.println("NIP entered: " + nipNumber);
+        firefox.findElement(By.xpath("//*[@id=\"context-company-reg_pes\"]")).sendKeys(regonNumber);
+        System.out.println("REGON entered: " + regonNumber);
         firefox.findElement(By.xpath("//*[@id=\"context-company-trade\"]")).sendKeys(String.valueOf(data.getCompanyTrade()));
         firefox.findElement(By.xpath("//*[@id=\"context-company-email\"]")).sendKeys("michal.krzyzak3@ideabank.pl");
         firefox.findElement(By.xpath("//*[@id=\"context-company-phone\"]")).sendKeys("515045208");
+        System.out.println("Company contact info filled...");
 
         //Select random PKD
         Random randPkd = new Random();
@@ -48,41 +106,56 @@ class Sole {
         Select pkd = new Select(firefox.findElement(By.xpath("//*[@id=\"context-company-pkd\"]")));
         pkd.selectByValue(String.valueOf(pkd1));
 
-        firefox.findElement(By.xpath("//*[@id=\"context-person-forename\"]")).sendKeys(data.getName());
+        firefox.findElement(By.xpath("//*[@id=\"context-person-forename\"]")).sendKeys(personName);
+        System.out.println("Person name entered: " + personName);
         firefox.findElement(By.xpath("//*[@id=\"context-person-mother_maiden_surname\"]")).sendKeys(data.getLastName());
-        firefox.findElement(By.xpath("//*[@id=\"context-person-surname\"]")).sendKeys(data.getLastName());
-        firefox.findElement(By.xpath("//*[@id=\"context-person-reg_pes\"]")).sendKeys(pesel.getPesel());
-        firefox.findElement(By.xpath("//*[@id=\"context-person-birth_place\"]")).sendKeys(data.getCityName());
+        firefox.findElement(By.xpath("//*[@id=\"context-person-surname\"]")).sendKeys(personLastName);
+        System.out.println("Person mother last name entered: " + personLastName);
+        firefox.findElement(By.xpath("//*[@id=\"context-person-reg_pes\"]")).sendKeys(peselNumber);
+        System.out.println("Person PESEL entered: " + peselNumber);
+        firefox.findElement(By.xpath("//*[@id=\"context-person-birth_place\"]")).sendKeys(cityName);
+        System.out.println("Person born in: " + cityName);
         firefox.findElement(By.xpath("//*[@id=\"context-person-email\"]")).sendKeys("mkrzyzak3@ideabank.pl");
         firefox.findElement(By.xpath("//*[@id=\"context-person-phone\"]")).sendKeys("515045208");
-        firefox.findElement(By.xpath("//*[@id=\"context-company-name\"]")).sendKeys(data.getCompanyName());
+        firefox.findElement(By.xpath("//*[@id=\"context-company-name\"]")).sendKeys(companyName);
+        System.out.println("Company name entered: " + companyName);
 
+        System.out.println("Selecting Sole Account purpose and Deposited values...");
         Select soleAccountPurpose = new Select(firefox.findElement(By.xpath("//*[@id=\"context-company-account_purpose\"]")));
         soleAccountPurpose.selectByValue(data.getAccountPurpose());
 
         Select soleDepositedValues = new Select(firefox.findElement(By.xpath("//*[@id=\"context-company-level_deposited_values\"]")));
         soleDepositedValues.selectByValue(data.getDepositedValues());
+        System.out.println("~~~~SELECTED~~~~");
 
         firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[8]/div/form/div/div[2]/fieldset/div[9]/div[2]/img")).click();
         firefox.findElement(By.xpath("/html/body/div[7]/div/div/select[2]")).click();
         firefox.findElement(By.xpath("/html/body/div[7]/div/div/select[2]/option[100]")).click();
         firefox.findElement(By.xpath("/html/body/div[7]/table/tbody/tr[2]/td[4]/a")).click();
 
-        firefox.findElement(By.xpath("//*[@id=\"context-person-identityDocument-number\"]")).sendKeys(identity.getIdentity());
+        firefox.findElement(By.xpath("//*[@id=\"context-person-identityDocument-number\"]")).sendKeys(idNumber);
+        System.out.println("ID Number generated: " + idNumber);
         firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[8]/div/form/div/div[1]/fieldset/div[17]/fieldset/div[4]/div[2]/img")).click(); //ID Release date
         firefox.findElement(By.xpath("/html/body/div[7]/div/div/select[2]")).click();
         firefox.findElement(By.xpath("/html/body/div[7]/div/div/select[2]/option[100]")).click();
         firefox.findElement(By.xpath("/html/body/div[7]/table/tbody/tr[2]/td[4]/a")).click();
 
+        System.out.println("Selecting company trade...");
         Select companyTrade = new Select(firefox.findElement(By.xpath("//*[@id=\"context-company-trade\"]")));
         companyTrade.selectByValue(data.getCompanyTrade());
+        System.out.println("~~~~SELECTED~~~~");
 
+        System.out.println("Selecting legal status...");
         firefox.findElement(By.xpath("//*[@id=\"context-company-legal_status\"]")).click();
         firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[8]/div/form/div/div[2]/fieldset/div[12]/div[2]/select/option[2]")).click();
+        System.out.println("~~~~SELECTED~~~~");
 
+        System.out.println("Selecting Poland as residence country...");
         firefox.findElement(By.xpath("//*[@id=\"context-person-residence-taxes_in_poland\"]")).click();
         firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[8]/div/form/div/div[1]/fieldset/div[20]/fieldset/div/div[2]/select/option[2]")).click();
+        System.out.println("~~~~SELECTED~~~~");
 
+        System.out.println("Selecting PEP and date...");
         firefox.findElement(By.xpath("//*[@id=\"context-person-pep-pep\"]")).click(); //PEP
         firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[8]/div/form/div/div[1]/fieldset/div[21]/fieldset/div[1]/div[2]/select/option[3]")).click();
         firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[8]/div/form/div/div[1]/fieldset/div[21]/fieldset/div[3]/div[2]/img")).click(); //PEP date
@@ -97,7 +170,9 @@ class Sole {
         firefox.findElement(By.xpath("//*[@id=\"addressCopyToCorrespondence\"]")).click();
         firefox.findElement(By.xpath("//*[@id=\"addressCopyToFirm\"]")).click();
         firefox.findElement(By.xpath("//*[@id=\"addressCopyToCompanyCorrespondence\"]")).click();
+        System.out.println("~~~~SELECTED~~~~");
 
+        System.out.println("Selecting Account purpose and Deposited values...");
         Select accountPurpose = new Select(firefox.findElement(By.xpath("//*[@id=\"context-person-other-account_purpose\"]")));
         accountPurpose.selectByValue(data.getAccountPurpose());
 
@@ -107,6 +182,7 @@ class Sole {
 
         Select depositedValues = new Select(firefox.findElement(By.xpath("//*[@id=\"context-person-other-level_deposited_values\"]")));
         depositedValues.selectByValue(data.getDepositedValues());
+        System.out.println("~~~~SELECTED~~~~");
 
         firefox.findElement(By.xpath("//*[@id=\"context-person-personAgreements-copyAgreementsFromClient\"]")).click();
 
@@ -119,16 +195,31 @@ class Sole {
         }
 
         firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[8]/div/form/div/div[3]/input")).click();
-        Thread.sleep(5000);
+        sleep(20000);
         firefox.findElement(By.xpath("//*[@id=\"submit\"]")).click();
 
-        if (firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[2]")).isDisplayed()) {
-            firefox.findElement(By.xpath("//*[@id=\"submit\"]")).click();
-        }
+        String context = firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[5]/div[1]/div/div/table/tbody/tr/td[2]")).getText();
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[3]/div[3]/div[5]/div[1]/div/div/table/tbody/tr/td[12]/a[1]")));
         firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[5]/div[1]/div/div/table/tbody/tr/td[12]/a[1]")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"crmmenu-createindef\"]")));
         firefox.findElement(By.xpath("//*[@id=\"crmmenu-createindef\"]")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[3]/div[2]/ul/li")));
+        firefox.navigate().refresh();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"crmmenu-sendphonepassword\"]")));
+        sleep(5000);
+        firefox.findElement(By.xpath("//*[@id=\"crmmenu-sendphonepassword\"]")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[1]/div/ul[2]/li[4]/a")));
+        firefox.findElement(By.xpath("/html/body/div[3]/div[1]/div/ul[2]/li[4]/a")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[3]/div[3]/div[5]/div/div/table/tbody/tr/td[6]")));
+
+        String text = firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[5]/div/div/table/tbody/tr/td[6]")).getText();
+        String phone = text.substring(text.length() - 10);
+
+        /*/~~~~~INSERT TO DATABASE~~~~~/*/
+        sole.insert(context,idNumber,personName,personLastName,peselNumber,regonNumber,nipNumber,phone);
+
+        System.out.println("~~~~CLIENT CREATED~~~~" + "\n" + "~~~~CLIENT CREATED IN DEF~~~~" + "\n" + "~~~~CLIENT ADDED TO DATABASE~~~~" + "\n" + "~~~~SOLE PROPRIETORSHIP CREATION COMPLETED~~~~");
+
     }
 }
