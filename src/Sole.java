@@ -32,8 +32,8 @@ class Sole {
         return connect;
     }
 
-    private void insert(String contextid, String idnumber, String clientname, String clientlastname, String clientpesel, String clientregonnumber, String clientnipnumber, String phonepassword){
-        String sql = "INSERT INTO clients (clienttype, contextid, idnumber, clientname, clientlastname, clientpesel, clientregonnumber, clientnipnumber, phonepassword) VALUES(?,?,?,?,?,?,?,?,?)";
+    private void insert(String contextid, String idnumber, String clientname, String clientlastname, String clientpesel, String clientregonnumber, String clientnipnumber, String phonepassword, String frontlogin, String frontpassword){
+        String sql = "INSERT INTO clients (clienttype, contextid, idnumber, clientname, clientlastname, clientpesel, clientregonnumber, clientnipnumber, phonepassword, frontlogin, frontpassword) VALUES(?,?,?,?,?,?,?,?,?,?,?)";
 
         try (Connection connect = this.getConnection();
              PreparedStatement pstmt = connect.prepareStatement(sql)) {
@@ -46,6 +46,8 @@ class Sole {
             pstmt.setString(7, clientregonnumber);
             pstmt.setString(8, clientnipnumber);
             pstmt.setString(9, phonepassword);
+            pstmt.setString(10, frontlogin);
+            pstmt.setString(11, frontpassword);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -84,7 +86,7 @@ class Sole {
         firefox.findElement(By.xpath("//*[@id=\"domain\"]")).sendKeys(Keys.TAB, "mkrzyzak3", Keys.TAB, "h2Ypqsop", Keys.ENTER);
 
         /*/~~~~ENTER CLIENT CREATOR~~~~/*/
-        WebDriverWait wait = new WebDriverWait(firefox, 10);
+        WebDriverWait wait = new WebDriverWait(firefox, 15);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[1]/div/ul[1]/li[1]/a")));
         firefox.findElement(By.xpath("/html/body/div[3]/div[1]/div/ul[1]/li[1]/a")).click();
         firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[1]/ul/li[1]/a")).click();
@@ -202,22 +204,82 @@ class Sole {
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[3]/div[3]/div[5]/div[1]/div/div/table/tbody/tr/td[12]/a[1]")));
         firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[5]/div[1]/div/div/table/tbody/tr/td[12]/a[1]")).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"crmmenu-createindef\"]")));
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"crmmenu-createindef\"]")));
         firefox.findElement(By.xpath("//*[@id=\"crmmenu-createindef\"]")).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[3]/div[2]/ul/li")));
-        firefox.navigate().refresh();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"crmmenu-sendphonepassword\"]")));
-        sleep(5000);
-        firefox.findElement(By.xpath("//*[@id=\"crmmenu-sendphonepassword\"]")).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[1]/div/ul[2]/li[4]/a")));
-        firefox.findElement(By.xpath("/html/body/div[3]/div[1]/div/ul[2]/li[4]/a")).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[3]/div[3]/div[5]/div/div/table/tbody/tr/td[6]")));
+        System.out.println("Create client in DEF...");
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[3]/div[3]/div[2]/ul/li")));
+        System.out.println("~~~~CREATED~~~~");
 
-        String text = firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[5]/div/div/table/tbody/tr/td[6]")).getText();
+        firefox.navigate().refresh();
+        sleep(5000);
+
+        System.out.println("Setting contract status...");
+        firefox.findElement(By.xpath("/html/body/div[3]/div[1]/div/ul[2]/li[7]/a")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[3]/div[3]/div[3]/div[5]/div[1]/div/div/table/tbody/tr/td[10]/a[1]")));
+        firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[5]/div[1]/div/div/table/tbody/tr/td[10]/a[1]")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"data-status\"]")));
+        Select contractStatus = new Select(firefox.findElement(By.xpath("//*[@id=\"data-status\"]")));
+        contractStatus.selectByValue("8");
+        sleep(500);
+        firefox.findElement(By.xpath("/html/body/div[8]/div[2]/div/form/div/div[3]/ul/li[2]/a")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"data-contracts_person-0-add_to_contract\"]")));
+        Select frontDecision = new Select(firefox.findElement(By.xpath("//*[@id=\"data-contracts_person-0-add_to_contract\"]")));
+        frontDecision.selectByValue("1");
+        sleep(500);
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"data-documents_person-0-verified\"]")));
+        Select verificationStatus = new Select(firefox.findElement(By.xpath("//*[@id=\"data-documents_person-0-verified\"]")));
+        verificationStatus.selectByValue("1");
+        sleep(500);
+        firefox.findElement(By.xpath("/html/body/div[8]/div[2]/div/form/div/div[3]/ul/li[2]/a")).click();
+        sleep(500);
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"data-contracts_company-0-add_to_contract\"]")));
+        Select soleFrontAccess = new Select(firefox.findElement(By.xpath("//*[@id=\"data-contracts_company-0-add_to_contract\"]")));
+        soleFrontAccess.selectByValue("1");
+        sleep(500);
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"data-documents_company-0-verified\"]")));
+        Select idCopy = new Select(firefox.findElement(By.xpath("//*[@id=\"data-documents_company-0-verified\"]")));
+        idCopy.selectByValue("1");
+        Select soleDocsVerified = new Select(firefox.findElement(By.xpath("//*[@id=\"data-documents_company-1-verified\"]")));
+        soleDocsVerified.selectByValue("1");
+        Select soleDocsVerified2 = new Select(firefox.findElement(By.xpath("//*[@id=\"data-documents_company-2-verified\"]")));
+        soleDocsVerified2.selectByValue("1");
+        Select soleDocsVerified3 = new Select(firefox.findElement(By.xpath("//*[@id=\"data-documents_company-3-verified\"]")));
+        soleDocsVerified3.selectByValue("1");
+        firefox.findElement(By.xpath("/html/body/div[8]/div[2]/div/form/div/div[3]/ul/li[3]/a")).click();
+        System.out.println("~~~~CONTRACT SIGNED~~~~");
+
+        System.out.println("Adding Front login to database...");
+        firefox.findElement(By.xpath("/html/body/div[3]/div[1]/div/ul[2]/li[5]/a")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Pokaż")));
+        firefox.findElement(By.linkText("Pokaż")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[8]/div[2]/table/tbody/tr[5]/td/table[2]/tbody/tr/td/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr[2]/td/center")));
+        String frontLoginMsg = firefox.findElement(By.xpath("/html/body/div[8]/div[2]/table/tbody/tr[5]/td/table[2]/tbody/tr/td/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr[2]/td/center")).getText();
+        String frontlogin = frontLoginMsg.substring(frontLoginMsg.length() - 8);
+        System.out.println("~~~~ADDED~~~~");
+
+        System.out.println("Adding phone and front password to database...");
+        firefox.findElement(By.xpath("/html/body/div[8]/div[3]/div/button[2]")).click();
+        firefox.findElement(By.xpath("/html/body/div[3]/div[1]/div/ul[2]/li[1]/a")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"crmmenu-sendphonepassword\"]")));
+        sleep(5500);
+        firefox.findElement(By.xpath("//*[@id=\"crmmenu-sendphonepassword\"]")).click();
+        System.out.println("SMS password sent...");
+        sleep(5500);
+        firefox.findElement(By.xpath("//*[@id=\"crmmenu-sendsmswithpassword\"]")).click();
+        System.out.println("Front password sent...");
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[3]/div[1]/div/ul[2]/li[4]/a")));
+        firefox.findElement(By.xpath("/html/body/div[3]/div[1]/div/ul[2]/li[4]/a")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[3]/div[3]/div[3]/div[5]/div/div/table/tbody/tr[2]/td[6]")));
+
+        String text = firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[5]/div/div/table/tbody/tr[2]/td[6]")).getText();
         String phone = text.substring(text.length() - 10);
 
+        String frontText = firefox.findElement(By.xpath("/html/body/div[3]/div[3]/div[3]/div[5]/div/div/table/tbody/tr[1]/td[6]")).getText();
+        String frontpassword = frontText.substring(frontText.length() - 10);
+        System.out.println("~~~~ADDED~~~~");
+
         /*/~~~~~INSERT TO DATABASE~~~~~/*/
-        sole.insert(context,idNumber,personName,personLastName,peselNumber,regonNumber,nipNumber,phone);
+        sole.insert(context,idNumber,personName,personLastName,peselNumber,regonNumber,nipNumber,phone,frontlogin, frontpassword);
 
         System.out.println("~~~~CLIENT CREATED~~~~" + "\n" + "~~~~CLIENT CREATED IN DEF~~~~" + "\n" + "~~~~CLIENT ADDED TO DATABASE~~~~" + "\n" + "~~~~SOLE PROPRIETORSHIP CREATION COMPLETED~~~~");
 
