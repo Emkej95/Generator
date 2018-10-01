@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
 
@@ -31,8 +32,8 @@ class Natural {
         return connect;
     }
 
-    private void insert(String contextid, String idnumber, String clientname, String clientlastname, String clientpesel, String phonepassword, String frontlogin, String frontpassword){
-        String sql = "INSERT INTO clients (clienttype, contextid, idnumber, clientname, clientlastname, clientpesel, clientregonnumber, clientnipnumber, phonepassword, frontlogin, frontpassword) VALUES(?,?,?,?,?,?,?,?,?,?,?)";
+    private void insert(String contextid, String idnumber, String clientname, String clientlastname, String clientpesel, String phonepassword, String frontlogin, String frontpassword, String environment){
+        String sql = "INSERT INTO clients (clienttype, contextid, idnumber, clientname, clientlastname, clientpesel, clientregonnumber, clientnipnumber, phonepassword, frontlogin, frontpassword, environment) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
 
         try (Connection connect = this.getConnection();
              PreparedStatement pstmt = connect.prepareStatement(sql)) {
@@ -47,6 +48,7 @@ class Natural {
             pstmt.setString(9, phonepassword);
             pstmt.setString(10, frontlogin);
             pstmt.setString(11, frontpassword);
+            pstmt.setString(12, environment);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -56,6 +58,7 @@ class Natural {
     void run() throws InterruptedException {
         DesiredCapabilities capabilities = DesiredCapabilities.firefox();
         capabilities.setCapability("marionette", true);
+        System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE,"/dev/null");
 
         /*/~~~~CREATE CLASS INSTANCES AND VARIABLES~~~~/*/
         Natural natural = new Natural();
@@ -72,12 +75,37 @@ class Natural {
         String idNumber = identity.getIdentity();
 
         /*/~~~~~OPEN WEB BROWSER~~~~~/*/
+        System.out.println("Choose environment: DEV or RC");
+        Scanner input = new Scanner(System.in);
+        String environment = input.nextLine();
+        System.out.println("Opening browser...");
         FirefoxDriver firefox = new FirefoxDriver();
-        firefox.get("http://cc.vm-rc-ecrm-front.ib/login");
-        firefox.manage().window().maximize();
+
+        switch (environment) {
+            case "RC":
+            case "rc":
+                firefox.get("http://cc.vm-rc-ecrm-front.ib/login");
+                firefox.manage().window().maximize();
+                System.out.println("~~~~OPENED~~~~");
+                break;
+            case "dev":
+            case "DEV":
+            case "test":
+            case "TEST":
+                firefox.get("http://cc.vm-rc-ecrm-front.ib/login");
+                firefox.manage().window().maximize();
+                System.out.println("~~~~OPENED~~~~");
+                break;
+            default:
+                System.out.println("Wrong environment! Terminating...");
+                Thread.currentThread().interrupt();
+                break;
+        }
 
         /*/~~~~LOGIN~~~~/*/
+        System.out.println("Logging in...");
         firefox.findElement(By.xpath("//*[@id=\"domain\"]")).sendKeys(Keys.TAB, "mkrzyzak3", Keys.TAB, "h2Ypqsop", Keys.ENTER);
+        System.out.println("~~~~LOGGED IN~~~~");
 
         /*/~~~~ENTER CLIENT CREATOR~~~~/*/
         WebDriverWait wait = new WebDriverWait(firefox, 15);
@@ -208,8 +236,9 @@ class Natural {
         System.out.println("~~~~ADDED~~~~");
 
         /*/~~~~~INSERT TO DATABASE~~~~~/*/
-        natural.insert(context, idNumber, personName, personLastName, peselNumber, phone, frontlogin, frontpassword);
+        natural.insert(context, idNumber, personName, personLastName, peselNumber, phone, frontlogin, frontpassword, environment);
 
         System.out.println("~~~~CLIENT CREATED~~~~" + "\n" + "~~~~CLIENT CREATED IN DEF~~~~" + "\n" + "~~~~CLIENT ADDED TO DATABASE~~~~" + "\n" + "~~~~NATURAL PERSON CREATION COMPLETED~~~~");
+        firefox.close();
     }
 }

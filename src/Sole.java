@@ -11,6 +11,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Random;
+import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
 
@@ -57,6 +58,7 @@ class Sole {
     void run() throws InterruptedException {
         DesiredCapabilities capabilities = DesiredCapabilities.firefox();
         capabilities.setCapability("marionette", true);
+        System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE,"/dev/null");
 
         /*/~~~~CREATE CLASS INSTANCES AND VARIABLES~~~~/*/
         Sole sole = new Sole();
@@ -78,12 +80,37 @@ class Sole {
         String idNumber = identity.getIdentity();
 
         /*/~~~~~OPEN WEB BROWSER~~~~~/*/
+        System.out.println("Choose environment: DEV or RC");
+        Scanner input = new Scanner(System.in);
+        String environment = input.nextLine();
+        System.out.println("Opening browser...");
         FirefoxDriver firefox = new FirefoxDriver();
-        firefox.get("http://cc.vm-rc-ecrm-front.ib/login");
-        firefox.manage().window().maximize();
+
+        switch (environment) {
+            case "RC":
+            case "rc":
+                firefox.get("http://cc.vm-rc-ecrm-front.ib/login");
+                firefox.manage().window().maximize();
+                System.out.println("~~~~OPENED~~~~");
+                break;
+            case "dev":
+            case "DEV":
+            case "test":
+            case "TEST":
+                firefox.get("http://cc.vm-rc-ecrm-front.ib/login");
+                firefox.manage().window().maximize();
+                System.out.println("~~~~OPENED~~~~");
+                break;
+            default:
+                System.out.println("Wrong environment! Terminating...");
+                Thread.currentThread().interrupt();
+                break;
+        }
 
         /*/~~~~LOGIN~~~~/*/
+        System.out.println("Logging in...");
         firefox.findElement(By.xpath("//*[@id=\"domain\"]")).sendKeys(Keys.TAB, "mkrzyzak3", Keys.TAB, "h2Ypqsop", Keys.ENTER);
+        System.out.println("~~~~LOGGED IN~~~~");
 
         /*/~~~~ENTER CLIENT CREATOR~~~~/*/
         WebDriverWait wait = new WebDriverWait(firefox, 15);
@@ -282,6 +309,6 @@ class Sole {
         sole.insert(context,idNumber,personName,personLastName,peselNumber,regonNumber,nipNumber,phone,frontlogin, frontpassword);
 
         System.out.println("~~~~CLIENT CREATED~~~~" + "\n" + "~~~~CLIENT CREATED IN DEF~~~~" + "\n" + "~~~~CLIENT ADDED TO DATABASE~~~~" + "\n" + "~~~~SOLE PROPRIETORSHIP CREATION COMPLETED~~~~");
-
+        firefox.close();
     }
 }

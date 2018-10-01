@@ -7,6 +7,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.sql.*;
+import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
 
@@ -53,6 +54,7 @@ class Company {
     void run() throws InterruptedException {
         DesiredCapabilities capabilities = DesiredCapabilities.firefox();
         capabilities.setCapability("marionette", true);
+        System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE,"/dev/null");
 
         /*/~~~~CREATE CLASS INSTANCES AND VARIABLES~~~~/*/
         Company company = new Company();
@@ -75,11 +77,32 @@ class Company {
         String crsStatus = data.getCrsStatus();
 
         /*/~~~~~OPEN WEB BROWSER~~~~~/*/
+        System.out.println("Choose environment: DEV or RC");
+        Scanner input = new Scanner(System.in);
+        String environment = input.nextLine();
         System.out.println("Opening browser...");
         FirefoxDriver firefox = new FirefoxDriver();
-        firefox.get("http://cc.vm-rc-ecrm-front.ib/login");
-        firefox.manage().window().maximize();
-        System.out.println("~~~~OPENED~~~~");
+
+        switch (environment) {
+            case "RC":
+            case "rc":
+                firefox.get("http://cc.vm-rc-ecrm-front.ib/login");
+                firefox.manage().window().maximize();
+                System.out.println("~~~~OPENED~~~~");
+                break;
+            case "dev":
+            case "DEV":
+            case "test":
+            case "TEST":
+                firefox.get("http://cc.vm-rc-ecrm-front.ib/login");
+                firefox.manage().window().maximize();
+                System.out.println("~~~~OPENED~~~~");
+                break;
+            default:
+                System.out.println("Wrong environment! Terminating...");
+                Thread.currentThread().interrupt();
+                break;
+        }
 
         /*/~~~~LOGIN~~~~/*/
         System.out.println("Logging in...");
@@ -324,6 +347,6 @@ class Company {
         company.insert(context,idNumber,personName,personLastName,peselNumber,regonNumber,nipNumber,phone,frontlogin, frontpassword);
 
         System.out.println("~~~~CLIENT CREATED~~~~" + "\n" + "~~~~CLIENT CREATED IN DEF~~~~" + "\n" + "~~~~CLIENT ADDED TO DATABASE~~~~" + "\n" + "~~~~COMPANY CREATION COMPLETED~~~~");
-
+        firefox.close();
     }
 }

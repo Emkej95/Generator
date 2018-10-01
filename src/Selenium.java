@@ -31,5 +31,17 @@ public class Selenium {
             System.out.println("Wrong number. Terminating...");
             Thread.currentThread().interrupt();
         }
+
+        /*/System.out.println("Do you want to change Front Password for that client? Y/N");
+        String passwordInput = scanner.nextLine();
+
+      if (passwordInput.equals("Y") || passwordInput.equals("y")) {
+            System.out.println("Changing clients Front Password...");
+            FrontChange frontChange = new FrontChange();
+            frontChange.run();
+        } else if (passwordInput.equals("N") || passwordInput.equals("n")){
+            System.out.println("Client created and added to database" + "\n" + "No need to change Front Password" + "\n" + "Terminating...");
+            Thread.currentThread().interrupt();
+        }/*/
     }
 }
