@@ -61,23 +61,25 @@ class Natural {
         System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE,"/dev/null");
 
         /*/~~~~CREATE CLASS INSTANCES AND VARIABLES~~~~/*/
+        Scanner input = new Scanner(System.in);
         Natural natural = new Natural();
         Data data = new Data();
         Pesel pesel = new Pesel();
         Identity identity = new Identity();
+        natural.getConnection();
 
         /*/~~~~~VARIABLES VALUES FROM METHODS~~~~~/*/
-        natural.getConnection();
         String personName = data.getName();
         String personLastName = data.getLastName();
         String peselNumber = pesel.getPesel();
         String cityName = data.getCityName();
         String idNumber = identity.getIdentity();
 
+
         /*/~~~~~OPEN WEB BROWSER~~~~~/*/
         System.out.println("Choose environment: DEV or RC");
-        Scanner input = new Scanner(System.in);
-        String environment = input.nextLine();
+        Scanner environmentInput = new Scanner(System.in);
+        String environment = environmentInput.nextLine();
         System.out.println("Opening browser...");
         FirefoxDriver firefox = new FirefoxDriver();
 
@@ -235,10 +237,30 @@ class Natural {
         String frontpassword = frontText.substring(frontText.length() - 10);
         System.out.println("~~~~ADDED~~~~");
 
-        /*/~~~~~INSERT TO DATABASE~~~~~/*/
-        natural.insert(context, idNumber, personName, personLastName, peselNumber, phone, frontlogin, frontpassword, environment);
 
         System.out.println("~~~~CLIENT CREATED~~~~" + "\n" + "~~~~CLIENT CREATED IN DEF~~~~" + "\n" + "~~~~CLIENT ADDED TO DATABASE~~~~" + "\n" + "~~~~NATURAL PERSON CREATION COMPLETED~~~~");
         firefox.close();
+
+        System.out.println("Do you want to change Front Password for that client? Y/N");
+        String passwordInput = input.nextLine();
+
+        if (passwordInput.equals("Y") || passwordInput.equals("y")) {
+            System.out.println("Changing clients Front Password...");
+
+            if (environment.equals("DEV") || environment.equals("dev") || environment.equals("TEST") || environment.equals("test")){
+                firefox.get("https://ibssodev2.bsbox.pl/#/login");
+                firefox.manage().window().maximize();
+            } else if (environment.equals("RC") || environment.equals("rc")){
+                firefox.get("https://rc-sso.cloud.ideabank.pl/#/login");
+                firefox.manage().window().maximize();
+            }
+
+
+
+        } else if (passwordInput.equals("N") || passwordInput.equals("n")){
+            System.out.println("Client created and added to database." + "\n" + "No need to change Front Password." + "\n" + "Terminating...");
+            Thread.currentThread().interrupt();
+            natural.insert(context, idNumber, personName, personLastName, peselNumber, phone, frontlogin, frontpassword, environment);
+        }
     }
 }

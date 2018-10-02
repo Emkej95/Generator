@@ -16,32 +16,20 @@ public class Selenium {
         }
 
         if (number == 1 || userInput.equals("1")) {
-            System.out.println("The number is: 1. Generating Natural Person.");
+            System.out.println("The number is: 1. Generating Natural Person...");
             Natural natural = new Natural();
             natural.run();
         } else if (number == 2 || userInput.equals("2")) {
-            System.out.println("The number is: 2. Generating Sole Proprietorship.");
+            System.out.println("The number is: 2. Generating Sole Proprietorship...");
             Sole sole = new Sole();
             sole.run();
         } else if (number == 3 || userInput.equals("3")) {
-            System.out.println("The number is: 3. Generating Company.");
+            System.out.println("The number is: 3. Generating Company...");
             Company company = new Company();
             company.run();
         } else {
-            System.out.println("Wrong number. Terminating...");
+            System.out.println("Wrong client type. Terminating...");
             Thread.currentThread().interrupt();
         }
-
-        /*/System.out.println("Do you want to change Front Password for that client? Y/N");
-        String passwordInput = scanner.nextLine();
-
-      if (passwordInput.equals("Y") || passwordInput.equals("y")) {
-            System.out.println("Changing clients Front Password...");
-            FrontChange frontChange = new FrontChange();
-            frontChange.run();
-        } else if (passwordInput.equals("N") || passwordInput.equals("n")){
-            System.out.println("Client created and added to database" + "\n" + "No need to change Front Password" + "\n" + "Terminating...");
-            Thread.currentThread().interrupt();
-        }/*/
     }
 }

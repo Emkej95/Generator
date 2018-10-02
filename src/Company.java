@@ -343,10 +343,20 @@ class Company {
         String frontpassword = frontText.substring(frontText.length() - 10);
         System.out.println("~~~~ADDED~~~~");
 
-        /*/~~~~~INSERT TO DATABASE~~~~~/*/
-        company.insert(context,idNumber,personName,personLastName,peselNumber,regonNumber,nipNumber,phone,frontlogin, frontpassword);
-
         System.out.println("~~~~CLIENT CREATED~~~~" + "\n" + "~~~~CLIENT CREATED IN DEF~~~~" + "\n" + "~~~~CLIENT ADDED TO DATABASE~~~~" + "\n" + "~~~~COMPANY CREATION COMPLETED~~~~");
         firefox.close();
+
+        System.out.println("Do you want to change Front Password for that client? Y/N");
+        String passwordInput = input.nextLine();
+
+        if (passwordInput.equals("Y") || passwordInput.equals("y")) {
+            System.out.println("Changing clients Front Password...");
+
+        } else if (passwordInput.equals("N") || passwordInput.equals("n")){
+            System.out.println("Client created and added to database." + "\n" + "No need to change Front Password." + "\n" + "Terminating...");
+            Thread.currentThread().interrupt();
+            company.insert(context,idNumber,personName,personLastName,peselNumber,regonNumber,nipNumber,phone,frontlogin, frontpassword);
+        }
     }
+
 }
