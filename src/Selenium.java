@@ -10,7 +10,7 @@ public class Selenium {
         Scanner scanner = new Scanner(System.in);
         String userInput = scanner.nextLine();
 
-        if (userInput.equals("r")) {
+        if (userInput.matches("r | R")) {
             System.out.println("Generating random client...");
             number = r.nextInt(3) + 1;
         }

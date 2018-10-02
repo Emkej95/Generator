@@ -311,10 +311,14 @@ class Sole {
         System.out.println("Do you want to change Front Password for that client? Y/N");
         String passwordInput = input.nextLine();
 
-        if (passwordInput.equals("Y") || passwordInput.equals("y")) {
+        if (passwordInput.matches("Y | y") && environment.matches("DEV | dev | TEST | test")) {
             System.out.println("Changing clients Front Password...");
-
-        } else if (passwordInput.equals("N") || passwordInput.equals("n")){
+            firefox.get("https://ibssodev2.bsbox.pl/#/login");
+            firefox.manage().window().maximize();
+        } else if (passwordInput.matches("Y | y") && environment.matches("RC | rc")){
+            firefox.get("https://rc-sso.cloud.ideabank.pl/#/login");
+            firefox.manage().window().maximize();
+        } else if (passwordInput.matches("N | n")) {
             System.out.println("Client created and added to database." + "\n" + "No need to change Front Password." + "\n" + "Terminating...");
             Thread.currentThread().interrupt();
             sole.insert(context,idNumber,personName,personLastName,peselNumber,regonNumber,nipNumber,phone,frontlogin, frontpassword);
