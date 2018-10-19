@@ -257,6 +257,5 @@ class Natural {
             natural.insert(context, idNumber, personName, personLastName, peselNumber, phone, frontlogin, frontpassword, environment);
         }
 
-
     }
 }

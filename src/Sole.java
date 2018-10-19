@@ -33,8 +33,8 @@ class Sole {
         return connect;
     }
 
-    private void insert(String contextid, String idnumber, String clientname, String clientlastname, String clientpesel, String clientregonnumber, String clientnipnumber, String phonepassword, String frontlogin, String frontpassword){
-        String sql = "INSERT INTO clients (clienttype, contextid, idnumber, clientname, clientlastname, clientpesel, clientregonnumber, clientnipnumber, phonepassword, frontlogin, frontpassword) VALUES(?,?,?,?,?,?,?,?,?,?,?)";
+    private void insert(String contextid, String idnumber, String clientname, String clientlastname, String clientpesel, String clientregonnumber, String clientnipnumber, String phonepassword, String frontlogin, String frontpassword, String environment){
+        String sql = "INSERT INTO clients (clienttype, contextid, idnumber, clientname, clientlastname, clientpesel, clientregonnumber, clientnipnumber, phonepassword, frontlogin, frontpassword, environment) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
 
         try (Connection connect = this.getConnection();
              PreparedStatement pstmt = connect.prepareStatement(sql)) {
@@ -49,6 +49,7 @@ class Sole {
             pstmt.setString(9, phonepassword);
             pstmt.setString(10, frontlogin);
             pstmt.setString(11, frontpassword);
+            pstmt.setString(12, environment);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -321,7 +322,7 @@ class Sole {
         } else if (passwordInput.matches("N | n")) {
             System.out.println("Client created and added to database." + "\n" + "No need to change Front Password." + "\n" + "Terminating...");
             Thread.currentThread().interrupt();
-            sole.insert(context,idNumber,personName,personLastName,peselNumber,regonNumber,nipNumber,phone,frontlogin, frontpassword);
+            sole.insert(context,idNumber,personName,personLastName,peselNumber,regonNumber,nipNumber,phone,frontlogin, frontpassword, environment);
         }
     }
 }
