@@ -1,9 +1,6 @@
 import java.util.*;
 
 class Nip {
-    Nip() {
-        getNip();
-    }
 
     private Random r = new Random();
     private List<Integer> generatedRandoms = getRandoms();
@@ -39,7 +36,7 @@ class Nip {
         do {
             controlNumber = generateControlNumber();
             if (controlNumber != 10) {
-                nipNumber = Arrays.toString(generatedRandoms.toArray()) + generateControlNumber();
+                nipNumber = Arrays.toString(generatedRandoms.toArray()) + controlNumber;
             }
         } while (controlNumber == 10);
 
